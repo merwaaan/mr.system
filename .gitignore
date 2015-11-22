@@ -1,0 +1,9 @@
+.vs/
+packages/
+*.csproj.user
+*/bin/
+*/obj/
+*/packages/
+core/scripts/.idea/
+core/scripts/__pycache__/
+
