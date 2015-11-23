@@ -10,11 +10,12 @@ namespace test.instructions {
       };
     }
 
-    void Test(byte left, byte right, Step assert) {
+    void Test(byte left, byte right, Step setup, Step assert) {
       AllOpcodes(
-        (operands) => {
+        operands => {
           cpu.registers.a = left;
           operands[0].Target = right;
+          setup.Invoke(operands);
         },
         assert);
     }
@@ -26,36 +27,39 @@ namespace test.instructions {
     [InlineData(0xA4, 0xFF, 0xFF)]
     [InlineData(0x0F, 0x10, 0x1F)]
     public void ShouldLogicalOr(byte left, byte right, byte output) {
-      Test(left, right, operands => Assert.Equal(output, cpu.registers.a));
+      Test(left, right, operands => { }, operands => Assert.Equal(output, cpu.registers.a));
     }
 
     [Theory]
-    [InlineData(0, 0, false)]
-    [InlineData(0x0F, 0xF0, true)]
-    [InlineData(0xFF, 0xFF, true)]
-    [InlineData(0xA4, 0xFF, true)]
-    [InlineData(0, 0x07, false)]
-    public void ShouldHandleSignFlag(byte left, byte right, bool sign) {
-      Test(left, right, operands => Assert.Equal(sign, cpu.Sign));
+    [InlineData(0, 0, true, false)]
+    [InlineData(0x0F, 0xF0, false, true)]
+    [InlineData(0xFF, 0xFF, false, true)]
+    [InlineData(0xA4, 0xFF, true, true)]
+    [InlineData(0, 0x07, false, false)]
+    [InlineData(0, 0x07, true, false)]
+    public void ShouldHandleSignFlag(byte left, byte right, bool signInput, bool signOutput) {
+      Test(left, right, operands => cpu.Sign = signInput, operands => Assert.Equal(signOutput, cpu.Sign));
     }
 
     [Theory]
-    [InlineData(0, 0, true)]
-    [InlineData(0x0F, 0xF0, false)]
-    [InlineData(0xFF, 0xFF, false)]
-    [InlineData(0xFF, 1, false)]
-    public void ShouldHandleZeroFlag(byte left, byte right, bool zero) {
-      Test(left, right, operands => Assert.Equal(zero, cpu.Zero));
+    [InlineData(0, 0, false, true)]
+    [InlineData(0, 0, true, true)]
+    [InlineData(0x0F, 0xF0, false, false)]
+    [InlineData(0xFF, 0xFF, true, false)]
+    [InlineData(0xFF, 1, true, false)]
+    public void ShouldHandleZeroFlag(byte left, byte right, bool zeroInput, bool zeroOutput) {
+      Test(left, right, operands => cpu.Zero = zeroInput, operands => Assert.Equal(zeroOutput, cpu.Zero));
     }
 
     [Theory]
-    [InlineData(0, 0, true)]
-    [InlineData(0x0F, 0xF0, true)]
-    [InlineData(0xFF, 0xFF, true)]
-    [InlineData(0xFF, 1, true)]
-    [InlineData(0xA4, 0, false)]
-    public void ShouldHandleParityFlag(byte left, byte right, bool parity) {
-      Test(left, right, operands => Assert.Equal(parity, cpu.Overflow));
+    [InlineData(0, 0, false, true)]
+    [InlineData(0x0F, 0xF0, true, true)]
+    [InlineData(0xA4, 0, true, false)]
+    [InlineData(0xFF, 0xFF, false, true)]
+    [InlineData(0xFF, 1, false, true)]
+    [InlineData(0, 0x4F, true, false)]
+    public void ShouldHandleParityFlag(byte left, byte right, bool parityInput, bool parityOutput) {
+      Test(left, right, operands => cpu.Overflow = parityInput, operands => Assert.Equal(parityOutput, cpu.Overflow));
     }
 
   }
@@ -65,6 +69,7 @@ namespace test.instructions {
   
     [Theory]
     [InlineData(0)]
+    [InlineData(1)]
     [InlineData(0x0F)]
     [InlineData(0x3A)]
     [InlineData(0xFF)]
