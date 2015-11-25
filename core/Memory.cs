@@ -13,21 +13,21 @@ namespace mr.system {
       data = d;
     }
 
-    public byte Read(int address) {
+    public byte Read(ushort address) {
       return data[address];
     }
 
-    public ushort Read16(int address) {
+    public ushort Read16(ushort address) {
       return (ushort) (data[address] | data[address + 1] << 8);
     }
 
-    public void Write(int address, byte value) {
+    public void Write(ushort address, byte value) {
       data[address] = value;
     }
     
-    public void Write16(int address, ushort value) {
-      data[address] = (byte)(value & 0x00FF);
-      data[address + 1] = (byte)(value & 0xFF00);
+    public void Write16(ushort address, ushort value) {
+      data[address] = (byte) (value & 0x00FF);
+      data[address + 1] = (byte) ((value & 0xFF00) >> 8);
     }
   }
 }
