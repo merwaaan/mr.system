@@ -43,13 +43,25 @@ namespace mr.system {
 
     public FlagCondition(CPU cpu, string flagName, bool state) {
 
-      setter = (x) => { }; // TODO exception?
+      setter = (x) => { };
 
       switch (flagName) {
-        case "carry": getter = () => cpu.Carry == state; break;
-        case "zero": getter = () => cpu.Zero == state; break;
-        case "parity": getter = () => cpu.Overflow == state; break;
-        case "sign": getter = () => cpu.Sign == state; break;
+        case "carry":
+          getter = () => cpu.Carry == state;
+          setter = (value) => cpu.Carry = value ? state : !state;
+          break;
+        case "zero":
+          getter = () => cpu.Zero == state;
+          setter = (value) => cpu.Zero = value ? state : !state; 
+          break;
+        case "parity":
+          getter = () => cpu.Overflow == state;
+          setter = (value) => cpu.Overflow = value ? state : !state; 
+          break;
+        case "sign":
+          getter = () => cpu.Sign == state;
+          setter = (value) => cpu.Sign = value ? state : !state;
+          break;
         default:
           throw new NotImplementedException($"Flag {flagName} does not exist");
       }
@@ -78,15 +90,15 @@ namespace mr.system {
   
   public class Immediate8 : Immediate<byte> { // TODO unit tests
     public Immediate8(CPU cpu) {
-      getter = () => cpu.memory.Read(cpu.pc + 1); // TODO handle position
-      setter = (x) => cpu.memory.Write(cpu.pc + 1, x);
+      getter = () => cpu.memory.Read((ushort) (cpu.pc + 1)); // TODO handle position
+      setter = (x) => cpu.memory.Write((ushort) (cpu.pc + 1), x);
     }
   }
 
   public class Immediate16 : Immediate<ushort> { // TODO unit tests
     public Immediate16(CPU cpu) {
-      getter = () => cpu.memory.Read16(cpu.pc + 1);
-      setter = (x) => cpu.memory.Write16(cpu.pc + 1, x);
+      getter = () => cpu.memory.Read16((ushort) (cpu.pc + 1));
+      setter = (x) => cpu.memory.Write16((ushort) (cpu.pc + 1), x);
     }
   }
   

@@ -61,6 +61,13 @@
   <ItemGroup>
     <Compile Include="BitwiseTest.cs" />
     <Compile Include="CPUTest.cs" />
+    <Compile Include="instructions\JR.cs" />
+    <Compile Include="instructions\RET.cs" />
+    <Compile Include="instructions\JP.cs" />
+    <Compile Include="instructions\CALL.cs" />
+    <Compile Include="instructions\RST.cs" />
+    <Compile Include="instructions\POP.cs" />
+    <Compile Include="instructions\PUSH.cs" />
     <Compile Include="instructions\RRA.cs" />
     <Compile Include="instructions\RLA.cs" />
     <Compile Include="instructions\RLCA.cs" />

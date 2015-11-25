@@ -17,6 +17,15 @@ namespace test.instructions {
 
     protected delegate void Step(params Operand[] operands);
 
+    protected void AllOpcodes(Step assert) {
+      foreach (byte opcode in opcodes) {
+        Instruction instruction = cpu.Apply(opcode);
+        Operand[] operands = instruction.Operands;
+        instruction.Do();
+        assert(operands);
+      }
+    }
+
     protected void AllOpcodes(Step setup, Step assert) {
       foreach (byte opcode in opcodes) {
         Instruction instruction = cpu.Apply(opcode);

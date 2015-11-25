@@ -10,13 +10,13 @@ namespace mr.system {
       public byte opcode;
       public string mnemonics;
       public string description;
-      public int size;
-      public int cycles;
+      public byte size;
+      public byte cycles;
     }
 
-    readonly CPU cpu;
-    readonly Action implementation;
     public readonly Info info;
+    readonly Action implementation;
+    readonly CPU cpu;
 
     public Operand[] Operands {
       get {
@@ -27,8 +27,7 @@ namespace mr.system {
       }
     }
 
-    public Instruction(CPU cpu, byte opcode, string mnemonics, string description, int size, int cycles, Action implementation) {
-      this.cpu = cpu;
+    public Instruction(CPU cpu, byte opcode, string mnemonics, string description, byte size, byte cycles, Action implementation) {
 
       info = new Info {
         opcode = opcode,
@@ -39,6 +38,7 @@ namespace mr.system {
       };
 
       this.implementation = implementation;
+      this.cpu = cpu;
     }
     
     public void Do() {
@@ -46,7 +46,7 @@ namespace mr.system {
       implementation();
 
       // Move the program counter
-      cpu.pc += (ushort) info.size;
+      cpu.pc += info.size;
     }
 
     public override string ToString() {
@@ -59,13 +59,14 @@ namespace mr.system {
 
     public string PrintDisassembled() {
       string opcode  = string.Join(" ", Enumerable.Range(cpu.pc, info.size)
+                                                  .Cast<ushort>()
                                                   .Select(addr => cpu.memory.Read(addr).ToString("X2")));
 
       return $"{opcode}: {info.mnemonics}";
     }
   }
   
-  partial class Instructions {
+  public partial class Instructions {
 
     public static Action nop(CPU cpu) =>
       () => { };

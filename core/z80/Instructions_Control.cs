@@ -11,12 +11,12 @@ namespace mr.system {
       () => o.Target = cpu.Pop();
 
     public static Action jr(CPU cpu, Operand<byte> o) =>
-      () => cpu.pc += o.Target;
+      () => cpu.pc += (ushort) Utils.Signed(o.Target);
 
     public static Action jr(CPU cpu, FlagCondition o1, Operand<byte> o2) =>
       () => {
         if (o1.Target)
-          cpu.pc += o2.Target;
+          cpu.pc = (ushort) (cpu.pc + Utils.Signed(o2.Target));
       };
     
     public static Action djnz(CPU cpu, Immediate8 o) =>
@@ -26,21 +26,21 @@ namespace mr.system {
       };
 
     public static Action jp(CPU cpu, Operand<ushort> o) =>
-      () => cpu.pc = o.Target;
+      () => cpu.pc = (ushort) (o.Target - 3); // TODO handle adjustment in Instr
 
     public static Action jp(CPU cpu, FlagCondition o1, Operand<ushort> o2) =>
       () => {
         if (o1.Target)
-          cpu.pc = o2.Target;
+          cpu.pc = (ushort) (o2.Target - 3);
       };
 
     public static Action call(CPU cpu, Immediate<ushort> o) =>
-      () => cpu.Call((ushort) o.Target);
+      () => cpu.Call(o.Target, 3);
 
     public static Action call(CPU cpu, FlagCondition o1, Immediate<ushort> o2) =>
       () => {
         if (o1.Target)
-          cpu.Call((ushort) o2.Target);
+          cpu.Call(o2.Target, 3);
       };
 
     public static Action ret(CPU cpu) =>
@@ -58,7 +58,7 @@ namespace mr.system {
       };
 
     public static Action rst(CPU cpu, Fixed o) =>
-      () => cpu.Call(o.Target);
+      () => cpu.Call(o.Target, 1);
   }
 
 }

@@ -22,12 +22,18 @@ namespace mr.system {
       true, false, false, true, false, true, true, false, false, true, true, false, true, false, false, true
     };
 
-    public static bool Parity(byte x) {
-      return parityLookup[x];
+    public static bool Parity(byte value) {
+      return parityLookup[value];
     }
-    
-    public static bool Sign(byte x) {
-      return x < 0x7F;
+
+    // Return the sign of the value (true -> positive)
+    public static bool Sign(byte value) {
+      return value < 0x80;
+    }
+
+    // Return the signed value of a byte in two's complement notation
+    public static sbyte Signed(byte value) {
+      return (sbyte) (Sign(value) ? value : value - 256); // TODO faster method?
     }
 
     // Check the state of the n-th bit of a given value.

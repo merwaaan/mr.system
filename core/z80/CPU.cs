@@ -71,8 +71,8 @@ namespace mr.system {
       instructions = new InstructionSet(this);
     }
 
-    public byte AtPC(int offset = 0) {
-      return memory.Read(pc + offset);
+    public byte AtPC(byte offset = 0) {
+      return memory.Read((ushort) (pc + offset));
     }
 
     public override string ToString() {
@@ -100,9 +100,8 @@ namespace mr.system {
       }
     }
 
-    public Instruction Apply(byte instr) { // TODO clean up (for testing only)
-      memory.Write(0, instr);
-      pc = 0;
+    public Instruction Apply(byte opcode) { // TODO clean up (for testing only)
+      memory.Write(pc, opcode);
       return instructions.GetCurrent();
     }
 
@@ -121,13 +120,14 @@ namespace mr.system {
       return value;
     }
 
-    public void Call(ushort address) {
-      Push((ushort) (pc + 3));
-      Jump((ushort) (address - 3));
+    public void Call(ushort address, byte adjust = 0) {
+      Push((ushort) (pc + adjust));
+      Jump((ushort) (address - adjust));
     }
 
     public void Return() {
       Jump(Pop());
     }
+
   }
 }

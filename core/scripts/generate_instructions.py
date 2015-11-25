@@ -6,7 +6,7 @@ from textwrap import indent
 supported_prefixes = ['main', 'ed']
 supported_instrs = ['nop', 'halt',
                     'ld', 'ex',
-                    'jr', 'jp', 'call', 'ret', 'push', 'pop', 'djnz',
+                    'jr', 'jp', 'call', 'ret', 'push', 'pop', 'djnz', 'rst',
                     'bit', 'set', 'res',
                     'inc', 'dec', 'add', 'adc', 'sub', 'sbc',
                     'or', 'and', 'xor', 'cpl',
