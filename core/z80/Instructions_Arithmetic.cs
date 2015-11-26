@@ -32,22 +32,22 @@ namespace mr.system {
 
     public static Action add(CPU cpu, Register8 o1, Operand<byte> o2) =>
       () => {
-        byte a = cpu.registers.a;
-        cpu.registers.a += o2.Target;
-        cpu.Sign = cpu.registers.a > 0x7F;
-        cpu.Zero = cpu.registers.a == 0;
+        byte a = o1.Target;
+        o1.Target += o2.Target;
+        cpu.Sign = o1.Target > 0x7F;
+        cpu.Zero = o1.Target == 0;
         cpu.HalfCarry = (a & 0x0F) + (o2.Target & 0x0F) > 0x0F;
-        cpu.Overflow = Utils.Sign(cpu.registers.a) == Utils.Sign(o2.Target) &&
-                       Utils.Sign(cpu.registers.a) != Utils.Sign(cpu.registers.a);
+        cpu.Overflow = Utils.Sign(a) == Utils.Sign(o2.Target) &&
+                       Utils.Sign(a) != Utils.Sign(o1.Target);
         cpu.AddSub = false; 
         cpu.Carry = a + o2.Target > 0xFF;
       };
 
     public static Action add(CPU cpu, Register16 o1, Register16 o2) =>
       () => {
-        ushort hl = cpu.registers.hl;
-        cpu.registers.hl += o2.Target;
-        cpu.HalfCarry = false; // TODO
+        ushort hl = o1.Target;
+        o1.Target += o2.Target;
+        cpu.HalfCarry = (hl & 0xFFF) + (o2.Target & 0xFFF) > 0xFFF;
         cpu.AddSub = false;
         cpu.Carry = hl + o2.Target > 0xFFFF;
       };
@@ -105,6 +105,16 @@ namespace mr.system {
         cpu.Overflow = true; // TODO
         cpu.AddSub = true;
         cpu.Carry = false; // TODO
+      };
+
+    public static Action cp(CPU cpu, Operand<byte> o) =>
+      () => {
+        cpu.Sign = cpu.registers.a > o.Target;
+        cpu.Zero = cpu.registers.a == o.Target;
+        cpu.HalfCarry = true; // TODO h4
+        cpu.Overflow = true; // TODO overflow
+        cpu.AddSub = true;
+        cpu.Carry = false; // TODO borrow
       };
 
     public static Action and(CPU cpu, Operand<byte> o) =>
